@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duplicate File Detector Pro</title>
+  <style>
+    :root {
+      --bg-base: #090d16;
+      --bg-surface: rgba(30, 41, 59, 0.65);
+      --bg-surface-hover: rgba(51, 65, 85, 0.75);
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --danger: #f43f5e;
+      --danger-hover: #e11d48;
+      --success: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --backdrop: blur(16px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    header {
+      background: var(--bg-surface);
+      backdrop-filter: var(--backdrop);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+
+    .logo-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .glass-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--backdrop);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .scan-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    input[type="text"], select, input[type="number"] {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.25rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    input[type="text"]:focus, select:focus, input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    button {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.75rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    }
+
+    button:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    button.secondary {
+      background: rgba(51, 65, 85, 0.8);
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: var(--bg-surface-hover);
+    }
+
+    button.danger {
+      background: var(--danger);
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
+    }
+
+    button.danger:hover {
+      background: var(--danger-hover);
+    }
+
+    /* Stats Grid */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-gradient);
+    }
+
+    .stat-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Loading / Progress State */
+    .loading-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      gap: 1.25rem;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .progress-path {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      word-break: break-all;
+      max-width: 800px;
+    }
+
+    /* Results Layout with Preview Panel */
+    .results-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1200px) {
+      .results-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .results-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-filter {
+      display: flex;
+      gap: 1rem;
+      flex: 1;
+      max-width: 450px;
+    }
+
+    .search-filter input {
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .groups-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .group-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .group-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .group-header {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .group-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .group-info span {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+    }
+
+    .group-info strong {
+      color: var(--text-main);
+    }
+
+    .file-rows {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+
+    .file-row:last-child {
+      border-bottom: none;
+    }
+
+    .file-row:hover {
+      background: rgba(51, 65, 85, 0.3);
+    }
+
+    .file-row.active-preview {
+      background: rgba(99, 102, 241, 0.15);
+      border-left: 4px solid var(--accent);
+    }
+
+    .file-main {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .file-path {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge.keep {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge.duplicate {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* Preview Panel Card */
+    .preview-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: sticky;
+      top: 6rem;
+    }
+
+    .preview-container {
+      width: 100%;
+      height: 260px;
+      background: rgba(10, 15, 30, 0.9);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-container img, .preview-container video, .preview-container audio {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .preview-container pre {
+      width: 100%;
+      height: 100%;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Modal / Explorer */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 2rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 650px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.5);
+    }
+
+    .modal-body {
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .folder-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .folder-item:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--accent);
+    }
+
+    .folder-item svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent);
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.5);
+    }
+
+    /* Sticky Action Bar */
+    .sticky-action-bar {
+      position: fixed;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 50px;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    .sticky-action-bar.visible {
+      bottom: 2rem;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      transform: translateY(150%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 2000;
+      font-weight: 500;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+    }
+
+    .toast.success { border-color: rgba(16, 185, 129, 0.4); }
+    .toast.error { border-color: rgba(244, 63, 94, 0.4); }
+
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      fill: var(--text-muted);
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 5h2v5h-2z"/></svg>
+      </div>
+      <div class="logo-text">
+        <h1 data-i18n="app_title">Duplicate File Detector Pro</h1>
+        <p data-i18n="app_subtitle">Advanced Desktop Edition v2.5</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="quick-path-label" style="font-size: 0.85rem; color: var(--text-muted);"></div>
+      <select id="lang-select" onchange="changeLanguage(this.value)" style="padding: 0.4rem 0.8rem; width: 130px; font-size: 0.85rem;">
+        <option value="es">🇪🇸 Español</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <!-- Scan Input Card -->
+    <div class="glass-card">
+      <h2 data-i18n="select_target_title">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Select Target Directory or Disk & Filters
+      </h2>
+      <div class="scan-layout">
+        <div class="input-row">
+          <div class="input-wrapper">
+            <input type="text" id="dir-path-input" placeholder="Enter path or browse folders...">
+          </div>
+          <button type="button" class="secondary" id="browse-modal-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span data-i18n="btn_browse">Browse...</span>
+          </button>
+          <button type="button" id="scan-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <span data-i18n="btn_scan">Start Deep Scan</span>
+          </button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="category-select" data-i18n="label_category">Category Filter:</label>
+            <select id="category-select" style="padding: 0.5rem 1rem; width: 180px;">
+              <option value="all" data-i18n="cat_all">📁 All Files</option>
+              <option value="images" data-i18n="cat_images">🖼️ Only Images</option>
+              <option value="videos" data-i18n="cat_videos">🎥 Only Videos</option>
+              <option value="docs" data-i18n="cat_docs">📄 Only Documents</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="min-size-input" data-i18n="label_minsize">Minimum Size (MB):</label>
+            <input type="number" id="min-size-input" value="0" min="0" step="0.5" style="width: 110px; padding: 0.5rem 0.75rem;">
+          </div>
+          <div class="filter-group" style="margin-left: auto;">
+            <input type="checkbox" id="skip-system-checkbox" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+            <label for="skip-system-checkbox" style="cursor: pointer;" data-i18n="label_excludesystem">Exclude System Folders</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State with Cancel -->
+    <div class="glass-card loading-box" id="loading-card">
+      <div class="spinner"></div>
+      <div style="font-weight: 600; font-size: 1.1rem;" data-i18n="scanning_title">Scanning Filesystem & Calculating Hashes...</div>
+      <div class="progress-path" id="progress-path-label" data-i18n="initializing">Initializing scan...</div>
+      <button type="button" class="danger" id="cancel-scan-btn" style="margin-top: 0.5rem; padding: 0.6rem 1.25rem; font-size: 0.9rem;">
+        ✕ <span data-i18n="btn_cancel">Cancel Scan</span>
+      </button>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-container" id="stats-grid" style="display: none;">
+      <div class="stat-card">
+        <span class="stat-title" data-i18n="stat_scanned">Files Scanned</span>
+        <span class="stat-number" id="stat-scanned">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title" data-i18n="stat_groups">Duplicate Groups</span>
+        <span class="stat-number" id="stat-groups">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title" data-i18n="stat_duplicates">Duplicate Files</span>
+        <span class="stat-number" id="stat-duplicates">0</span>
+      </div>
+      <div class="stat-card" style="border-left-color: var(--danger);">
+        <span class="stat-title" data-i18n="stat_wasted">Wasted Space</span>
+        <span class="stat-number" id="stat-wasted" style="color: var(--danger);">0 MB</span>
+      </div>
+    </div>
+
+    <!-- Results Section with Preview Panel -->
+    <div id="results-wrapper" style="display: none;">
+      <div class="results-layout">
+        <!-- Results Card -->
+        <div class="glass-card" style="margin-bottom: 0;">
+          <div class="results-toolbar">
+            <div class="search-filter">
+              <input type="text" id="search-input" placeholder="Filter duplicate files by name or path..." oninput="filterResults()" data-i18n-placeholder="search_placeholder">
+            </div>
+            <div class="action-group">
+              <button type="button" class="secondary" onclick="smartSelect('oldest')" data-i18n="btn_oldest">⭐ Keep Oldest</button>
+              <button type="button" class="secondary" onclick="smartSelect('newest')" data-i18n="btn_newest">⚡ Keep Newest</button>
+              <button type="button" class="secondary" onclick="smartSelect('shortest')" data-i18n="btn_shortest">📏 Keep Shortest</button>
+              <button type="button" class="secondary" onclick="exportReport()" data-i18n="btn_export">📥 Export Report</button>
+            </div>
+          </div>
+          <div class="groups-list" id="groups-container"></div>
+        </div>
+
+        <!-- Preview Panel Card -->
+        <div class="preview-card" id="preview-card">
+          <h3 style="font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;" data-i18n="preview_title">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            File Preview
+          </h3>
+          <div class="preview-container" id="preview-box">
+            <span style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1rem;" data-i18n="preview_instruction">Click any file row to preview its content or media.</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); word-break: break-all;" id="preview-path-info" data-i18n="preview_path_none">
+            Path: None selected
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);" id="preview-meta-info">
+            Size / Date: -
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="glass-card empty-state" id="empty-state">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 5h2v5h-2z"/></svg>
+      <h3 data-i18n="empty_title">Ready to optimize your storage</h3>
+      <p data-i18n="empty_desc">Use the folder browser above or enter a drive path to detect and eliminate duplicate files.</p>
+    </div>
+  </main>
+
+  <!-- Interactive Explorer Modal -->
+  <div class="modal-overlay" id="explorer-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 600;" data-i18n="explorer_title">Interactive Folder Explorer</h3>
+        <button type="button" class="secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="closeExplorer()">✕ <span data-i18n="btn_close">Close</span></button>
+      </div>
+      <div style="padding: 1rem 1.5rem; background: rgba(15, 23, 42, 0.4); border-bottom: 1px solid var(--border); display: flex; gap: 0.5rem; align-items: center;">
+        <button type="button" class="secondary" id="explorer-up-btn" style="padding: 0.5rem 0.75rem;" title="Go Up">&#11014; <span data-i18n="btn_up">Up</span></button>
+        <input type="text" id="explorer-current-path" readonly style="font-family: monospace; font-size: 0.85rem;">
+      </div>
+      <div class="modal-body" id="explorer-items-list"></div>
+      <div class="modal-footer">
+        <span style="font-size: 0.85rem; color: var(--text-muted);" id="explorer-selected-label" data-i18n="explorer_select_folder">Select a folder below</span>
+        <button type="button" id="explorer-select-btn" data-i18n="btn_select_this">Select This Folder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Action Bar -->
+  <div class="sticky-action-bar" id="sticky-bar">
+    <div style="display: flex; flex-direction: column;">
+      <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="selected_removal">Selected for Removal</span>
+      <span style="font-weight: 700; font-size: 1.1rem;" id="selection-summary">0 files (0 Bytes)</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.75rem; border-left: 1px solid var(--border); padding-left: 1.5rem;">
+      <input type="checkbox" id="permanent-delete-checkbox" style="width: 18px; height: 18px; accent-color: var(--danger); cursor: pointer;">
+      <label for="permanent-delete-checkbox" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;" data-i18n="label_permanent">Permanent Delete</label>
+    </div>
+    <button type="button" class="danger" id="delete-btn" onclick="confirmAndDeleteFiles()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      <span data-i18n="btn_delete">Delete Selected Files</span>
+    </button>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="toast-msg">Operation completed successfully</span>
+  </div>
+
+  <script>
+    // i18n Dictionary
+    const translations = {
+      es: {
+        app_title: "Duplicate File Detector Pro",
+        app_subtitle: "Edición de Escritorio Avanzada v2.5",
+        select_target_title: "Seleccionar Directorio o Disco de Destino & Filtros",
+        btn_browse: "Examinar...",
+        btn_scan: "Iniciar Escaneo Profundo",
+        label_category: "Filtrar por Categoría:",
+        cat_all: "📁 Todos los Archivos",
+        cat_images: "🖼️ Solo Imágenes",
+        cat_videos: "🎥 Solo Vídeos",
+        cat_docs: "📄 Solo Documentos",
+        label_minsize: "Tamaño Mínimo (MB):",
+        label_excludesystem: "Excluir Carpetas del Sistema",
+        scanning_title: "Escaneando Sistema de Archivos y Calculando Hashes...",
+        initializing: "Iniciando escaneo...",
+        btn_cancel: "Cancelar Escaneo",
+        stat_scanned: "Archivos Escaneados",
+        stat_groups: "Grupos Duplicados",
+        stat_duplicates: "Archivos Duplicados",
+        stat_wasted: "Espacio Desperdiciado",
+        search_placeholder: "Filtrar archivos duplicados por nombre o ruta...",
+        btn_oldest: "⭐ Mantener Antiguo",
+        btn_newest: "⚡ Mantener Reciente",
+        btn_shortest: "📏 Ruta más Corta",
+        btn_export: "📥 Exportar Informe",
+        preview_title: "Vista Previa de Archivo",
+        preview_instruction: "Haz clic en cualquier fila para previsualizar su contenido o multimedia.",
+        preview_path_none: "Ruta: Ninguna seleccionada",
+        empty_title: "Listo para optimizar tu almacenamiento",
+        empty_desc: "Usa el explorador de carpetas superior o ingresa una ruta para detectar y eliminar archivos duplicados.",
+        explorer_title: "Explorador Interactivo de Carpetas",
+        btn_close: "Cerrar",
+        btn_up: "Arriba",
+        explorer_select_folder: "Selecciona una carpeta abajo",
+        btn_select_this: "Seleccionar Esta Carpeta",
+        selected_removal: "Seleccionados para Eliminación",
+        label_permanent: "Borrado Permanente",
+        btn_delete: "Eliminar Archivos Seleccionados"
+      },
+      en: {
+        app_title: "Duplicate File Detector Pro",
+        app_subtitle: "Advanced Desktop Edition v2.5",
+        select_target_title: "Select Target Directory or Disk & Filters",
+        btn_browse: "Browse...",
+        btn_scan: "Start Deep Scan",
+        label_category: "Category Filter:",
+        cat_all: "📁 All Files",
+        cat_images: "🖼️ Only Images",
+        cat_videos: "🎥 Only Videos",
+        cat_docs: "📄 Only Documents",
+        label_minsize: "Minimum Size (MB):",
+        label_excludesystem: "Exclude System Folders",
+        scanning_title: "Scanning Filesystem & Calculating Hashes...",
+        initializing: "Initializing scan...",
+        btn_cancel: "Cancel Scan",
+        stat_scanned: "Files Scanned",
+        stat_groups: "Duplicate Groups",
+        stat_duplicates: "Duplicate Files",
+        stat_wasted: "Wasted Space",
+        search_placeholder: "Filter duplicate files by name or path...",
+        btn_oldest: "⭐ Keep Oldest",
+        btn_newest: "⚡ Keep Newest",
+        btn_shortest: "📏 Keep Shortest",
+        btn_export: "📥 Export Report",
+        preview_title: "File Preview",
+        preview_instruction: "Click any file row to preview its content or media.",
+        preview_path_none: "Path: None selected",
+        empty_title: "Ready to optimize your storage",
+        empty_desc: "Use the folder browser above or enter a drive path to detect and eliminate duplicate files.",
+        explorer_title: "Interactive Folder Explorer",
+        btn_close: "Close",
+        btn_up: "Up",
+        explorer_select_folder: "Select a folder below",
+        btn_select_this: "Select This Folder",
+        selected_removal: "Selected for Removal",
+        label_permanent: "Permanent Delete",
+        btn_delete: "Delete Selected Files"
+      }
+    };
+
+    let currentLang = 'es';
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('dfd_lang', lang);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+    }
+
+    // Load saved lang on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('dfd_lang') || 'es';
+      document.getElementById('lang-select').value = savedLang;
+      changeLanguage(savedLang);
+    });
+
+    let activeBrowserPath = '';
+    let selectedBrowserPath = '';
+    let lastCleaningReport = null;
+
+    function formatBytes(bytes, decimals = 2) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleString();
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => { toast.classList.remove('show'); }, 4000);
+    }
+
+    async function loadDefaultPaths() {
+      try {
+        const res = await fetch('/api/paths');
+        const data = await res.json();
+        document.getElementById('dir-path-input').value = data.defaultPath;
+        document.getElementById('quick-path-label').textContent = `Default: ${data.defaultPath}`;
+      } catch (err) {
+        console.error('Failed to load paths:', err);
+      }
+    }
+
+    // Explorer Modal
+    const explorerModal = document.getElementById('explorer-modal');
+    document.getElementById('browse-modal-btn').addEventListener('click', () => openExplorer(''));
+
+    function closeExplorer() { explorerModal.classList.remove('open'); }
+
+    async function openExplorer(dirPath) {
+      explorerModal.classList.add('open');
+      await fetchExplorerItems(dirPath);
+    }
+
+    async function fetchExplorerItems(dirPath) {
+      const listEl = document.getElementById('explorer-items-list');
+      listEl.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading folders...</div>';
+
+      try {
+        const res = await fetch('/api/browse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dirPath })
+        });
+        const data = await res.json();
+        if (!data.success) {
+          showToast(data.error || 'Failed to browse', 'error');
+          return;
+        }
+
+        activeBrowserPath = data.currentPath;
+        selectedBrowserPath = data.currentPath;
+        document.getElementById('explorer-current-path').value = data.currentPath || 'Computer Drives';
+        document.getElementById('explorer-selected-label').textContent = data.currentPath ? `Selected: ${data.currentPath}` : 'Select a drive or folder';
+
+        const upBtn = document.getElementById('explorer-up-btn');
+        upBtn.onclick = () => fetchExplorerItems(data.parentPath || '');
+        upBtn.style.display = data.parentPath !== null ? 'inline-flex' : 'none';
+
+        listEl.innerHTML = '';
+        data.items.forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'folder-item';
+          itemEl.innerHTML = `
+            <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+            <span style="font-family: monospace; font-size: 0.9rem; flex: 1; word-break: break-all;">${item.name}</span>
+          `;
+          itemEl.onclick = () => {
+            selectedBrowserPath = item.path;
+            document.getElementById('explorer-selected-label').textContent = `Selected: ${item.path}`;
+          };
+          itemEl.ondblclick = () => fetchExplorerItems(item.path);
+          listEl.appendChild(itemEl);
+        });
+      } catch (err) {
+        showToast('Explorer error: ' + err.message, 'error');
+      }
+    }
+
+    document.getElementById('explorer-select-btn').onclick = () => {
+      if (selectedBrowserPath) {
+        document.getElementById('dir-path-input').value = selectedBrowserPath;
+        closeExplorer();
+      } else {
+        showToast('Please select a folder first.', 'error');
+      }
+    };
+
+    try {
+      if (window.require) {
+        const { ipcRenderer } = window.require('electron');
+        ipcRenderer.on('scan-progress', (event, data) => {
+          document.getElementById('progress-path-label').textContent = `Scanning: ${data.currentDir} (${data.count} files found)`;
+        });
+      }
+    } catch (e) {}
+
+    document.getElementById('cancel-scan-btn').onclick = async () => {
+      await fetch('/api/cancel-scan', { method: 'POST' });
+      document.getElementById('loading-card').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'flex';
+      showToast('Scan cancelled by user.', 'error');
+    };
+
+    document.getElementById('scan-btn').onclick = async () => {
+      const dirPath = document.getElementById('dir-path-input').value.trim();
+      const skipSystem = document.getElementById('skip-system-checkbox').checked;
+      const category = document.getElementById('category-select').value;
+      const minSizeMB = parseFloat(document.getElementById('min-size-input').value) || 0;
+      const minSize = minSizeMB * 1024 * 1024;
+
+      if (!dirPath) {
+        showToast('Please enter a valid directory path.', 'error');
+        return;
+      }
+
+      document.getElementById('loading-card').style.display = 'flex';
+      document.getElementById('stats-grid').style.display = 'none';
+      document.getElementById('results-wrapper').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('sticky-bar').classList.remove('visible');
+      document.getElementById('progress-path-label').textContent = `Scanning ${dirPath}...`;
+
+      try {
+        const res = await fetch('/api/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dirPath, skipSystem, minSize, category })
+        });
+        const data = await res.json();
+        document.getElementById('loading-card').style.display = 'none';
+
+        if (!data.success) {
+          if (data.cancelled) {
+            showToast('Scan was cancelled.', 'error');
+          } else {
+            showToast(data.error || 'Scan failed', 'error');
+          }
+          document.getElementById('empty-state').style.display = 'flex';
+          return;
+        }
+
+        renderResults(data);
+        showToast(`Scan complete in ${data.stats.durationSeconds}s. Found ${data.stats.duplicateGroupsCount} groups.`);
+      } catch (err) {
+        document.getElementById('loading-card').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'flex';
+        showToast('Network error: ' + err.message, 'error');
+      }
+    };
+
+    function previewFile(filePath, fileSize, fileMtime, rowEl) {
+      document.querySelectorAll('.file-row').forEach(r => r.classList.remove('active-preview'));
+      if (rowEl) rowEl.classList.add('active-preview');
+
+      document.getElementById('preview-path-info').textContent = `Path: ${filePath}`;
+      document.getElementById('preview-meta-info').textContent = `Size: ${formatBytes(fileSize)} | Modified: ${formatDate(fileMtime)}`;
+
+      const box = document.getElementById('preview-box');
+      const ext = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
+      const images = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.svg'];
+      const videos = ['.mp4', '.webm', '.ogg', '.mkv', '.avi'];
+      const audio = ['.mp3', '.wav', '.ogg', '.m4a', '.flac'];
+
+      const previewUrl = `/api/preview?path=${encodeURIComponent(filePath)}`;
+
+      if (images.includes(ext)) {
+        box.innerHTML = `<img src="${previewUrl}" alt="Preview">`;
+      } else if (videos.includes(ext)) {
+        box.innerHTML = `<video controls src="${previewUrl}"></video>`;
+      } else if (audio.includes(ext)) {
+        box.innerHTML = `<audio controls src="${previewUrl}" style="width: 90%;"></audio>`;
+      } else {
+        fetch(previewUrl)
+          .then(res => res.text())
+          .then(text => {
+            box.innerHTML = `<pre>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
+          })
+          .catch(() => {
+            box.innerHTML = `<span style="color: var(--text-muted);">Preview not available for this file type.</span>`;
+          });
+      }
+    }
+
+    function renderResults(data) {
+      const { stats, groups } = data;
+      lastCleaningReport = data;
+
+      document.getElementById('stat-scanned').textContent = stats.totalFilesScanned.toLocaleString();
+      document.getElementById('stat-groups').textContent = stats.duplicateGroupsCount.toLocaleString();
+      document.getElementById('stat-duplicates').textContent = stats.duplicateFilesCount.toLocaleString();
+      document.getElementById('stat-wasted').textContent = formatBytes(stats.totalWastedBytes);
+
+      document.getElementById('stats-grid').style.display = 'grid';
+
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      if (groups.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No duplicate files found matching your criteria!</p></div>';
+        document.getElementById('results-wrapper').style.display = 'block';
+        return;
+      }
+
+      groups.forEach((group) => {
+        const groupCard = document.createElement('div');
+        groupCard.className = 'group-card';
+
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.innerHTML = `
+          <div class="group-info">
+            <span><strong>Size:</strong> ${formatBytes(group.size)}</span>
+            <span><strong>Duplicates:</strong> ${group.count} files</span>
+          </div>
+          <span style="color: var(--danger); font-weight: 600;">Wasted: ${formatBytes(group.wastedBytes)}</span>
+        `;
+        groupCard.appendChild(header);
+
+        const rowsContainer = document.createElement('div');
+        rowsContainer.className = 'file-rows';
+
+        group.files.forEach((file, fileIdx) => {
+          const isOriginal = fileIdx === 0;
+          const row = document.createElement('div');
+          row.className = 'file-row';
+          const fileMtimeTime = new Date(file.mtime).getTime();
+          row.innerHTML = `
+            <div class="file-main">
+              <input type="checkbox" class="checkbox file-checkbox" data-path="${file.path}" data-size="${file.size}" data-mtime="${fileMtimeTime}" ${!isOriginal ? 'checked' : ''} onclick="event.stopPropagation()" onchange="updateSelectionState()">
+              <div class="file-path" title="${file.path}">${file.path}</div>
+            </div>
+            <div class="file-meta">
+              <span>${formatDate(file.mtime)}</span>
+              <span class="badge ${isOriginal ? 'keep' : 'duplicate'}">${isOriginal ? 'Keep (Oldest)' : 'Duplicate'}</span>
+            </div>
+          `;
+          row.onclick = () => previewFile(file.path, file.size, file.mtime, row);
+          rowsContainer.appendChild(row);
+        });
+
+        groupCard.appendChild(rowsContainer);
+        container.appendChild(groupCard);
+      });
+
+      document.getElementById('results-wrapper').style.display = 'block';
+      updateSelectionState();
+    }
+
+    function filterResults() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const groups = document.querySelectorAll('.group-card');
+
+      groups.forEach(group => {
+        const rows = group.querySelectorAll('.file-row');
+        let groupMatch = false;
+        rows.forEach(row => {
+          const pathText = row.querySelector('.file-path').textContent.toLowerCase();
+          if (pathText.includes(query)) {
+            row.style.display = 'flex';
+            groupMatch = true;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+        group.style.display = groupMatch ? 'block' : 'none';
+      });
+    }
+
+    function smartSelect(mode) {
+      const groups = document.querySelectorAll('.group-card');
+      groups.forEach(groupCard => {
+        const rows = Array.from(groupCard.querySelectorAll('.file-row'));
+        if (rows.length < 2) return;
+
+        const items = rows.map(row => {
+          const cb = row.querySelector('.file-checkbox');
+          const badge = row.querySelector('.badge');
+          return {
+            row,
+            cb,
+            badge,
+            path: cb.dataset.path,
+            mtime: parseInt(cb.dataset.mtime, 10),
+            size: parseInt(cb.dataset.size, 10)
+          };
+        });
+
+        let keepItem = items[0];
+        if (mode === 'oldest') {
+          keepItem = items.reduce((prev, curr) => curr.mtime < prev.mtime ? curr : prev, items[0]);
+        } else if (mode === 'newest') {
+          keepItem = items.reduce((prev, curr) => curr.mtime > prev.mtime ? curr : prev, items[0]);
+        } else if (mode === 'shortest') {
+          keepItem = items.reduce((prev, curr) => curr.path.length < prev.path.length ? curr : prev, items[0]);
+        }
+
+        items.forEach(item => {
+          const isKeep = (item === keepItem);
+          item.cb.checked = !isKeep;
+          item.badge.className = `badge ${isKeep ? 'keep' : 'duplicate'}`;
+          item.badge.textContent = isKeep ? `Keep (${mode === 'oldest' ? 'Oldest' : mode === 'newest' ? 'Newest' : 'Shortest'})` : 'Duplicate';
+        });
+      });
+
+      updateSelectionState();
+      showToast(`Smart selection applied: Keep ${mode}`, 'success');
+    }
+
+    function updateSelectionState() {
+      const checked = document.querySelectorAll('.file-checkbox:checked');
+      const stickyBar = document.getElementById('sticky-bar');
+      const summary = document.getElementById('selection-summary');
+
+      if (checked.length > 0) {
+        let totalSize = 0;
+        checked.forEach(cb => { totalSize += parseInt(cb.dataset.size || 0, 10); });
+        summary.textContent = `${checked.length} files selected (${formatBytes(totalSize)} freed)`;
+        stickyBar.classList.add('visible');
+      } else {
+        stickyBar.classList.remove('visible');
+      }
+    }
+
+    async function confirmAndDeleteFiles() {
+      const checked = document.querySelectorAll('.file-checkbox:checked');
+      if (checked.length === 0) return;
+
+      const permanent = document.getElementById('permanent-delete-checkbox').checked;
+      const filePaths = Array.from(checked).map(cb => cb.dataset.path);
+
+      let confirmMsg = `Move ${filePaths.length} selected duplicate files to Recycle Bin?`;
+      if (permanent) {
+        confirmMsg = `⚠️ ADVERTENCIA CRÍTICA: ¿Estás seguro de que deseas eliminar permanentemente ${filePaths.length} archivos? Esta acción no se puede deshacer.`;
+      }
+
+      if (!confirm(confirmMsg)) return;
+      if (permanent && !confirm(`CONFIRMACIÓN FINAL: Borrado definitivo de ${filePaths.length} archivos. ¿Proceder?`)) return;
+
+      try {
+        const res = await fetch('/api/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePaths, permanent })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`Successfully cleaned ${data.deletedCount} files, freed ${formatBytes(data.freedBytes)}.`);
+          document.getElementById('scan-btn').click();
+        } else {
+          showToast('Some files could not be processed.', 'error');
+        }
+      } catch (err) {
+        showToast('Error deleting files: ' + err.message, 'error');
+      }
+    }
+
+    function exportReport() {
+      if (!lastCleaningReport || !lastCleaningReport.groups) {
+        showToast('No scan report available to export.', 'error');
+        return;
+      }
+
+      let reportText = `DUPLICATE FILE DETECTOR PRO - CLEANING & SCAN REPORT\n`;
+      reportText += `Generated: ${new Date().toLocaleString()}\n`;
+      reportText += `Total Files Scanned: ${lastCleaningReport.stats.totalFilesScanned}\n`;
+      reportText += `Duplicate Groups: ${lastCleaningReport.stats.duplicateGroupsCount}\n`;
+      reportText += `Total Wasted Space: ${formatBytes(lastCleaningReport.stats.totalWastedBytes)}\n\n`;
+      reportText += `==================================================\n\n`;
+
+      lastCleaningReport.groups.forEach((group, idx) => {
+        reportText += `Group #${idx + 1} - Size: ${formatBytes(group.size)} - Wasted: ${formatBytes(group.wastedBytes)}\n`;
+        group.files.forEach((file, fIdx) => {
+          reportText += `  [${fIdx === 0 ? 'KEEP' : 'DUPLICATE'}] ${file.path} (${formatDate(file.mtime)})\n`;
+        });
+        reportText += `\n`;
+      });
+
+      const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `duplicate-report-${Date.now()}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Cleaning report exported successfully (.txt)!');
+    }
+
+    loadDefaultPaths();
+  </script>
+</body>
+</html>

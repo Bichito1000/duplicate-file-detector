@@ -1,0 +1,36 @@
+{
+  "name": "duplicate-file-detector",
+  "version": "2.0.0",
+  "description": "High-performance duplicate file detector with Electron desktop window",
+  "main": "main.js",
+  "author": "Duplicate File Detector Pro",
+  "scripts": {
+    "start": "electron main.js",
+    "build:exe": "electron-builder --win"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.duplicatefiledetector.pro",
+    "productName": "Duplicate File Detector Pro",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "artifactName": "Duplicate File Detector Pro.exe"
+    }
+  }
+}
